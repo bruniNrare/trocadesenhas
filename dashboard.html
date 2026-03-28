@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Troca de Senha</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #7b2ff7;
+            --danger: #ff3b5c;
+            --warning: #ff9f43;
+            --success: #00e396;
+            --dark: #0a0e27;
+            --darker: #060818;
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --glass: rgba(255, 255, 255, 0.05);
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--darker);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 59, 92, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 60% 60%, rgba(0, 227, 150, 0.1) 0%, transparent 50%);
+            animation: backgroundMove 25s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.2) rotate(10deg); opacity: 0.8; }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-100px) translateX(50px); }
+            50% { transform: translateY(-200px) translateX(-50px); }
+            75% { transform: translateY(-100px) translateX(100px); }
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(6, 8, 24, 0.98) 100%);
+            backdrop-filter: blur(30px);
+            padding: 25px 50px;
+            box-shadow: 0 15px 60px rgba(0, 0, 0, 0.6);
+            border-bottom: 2px solid rgba(0, 212, 255, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), #ff3b5c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            animation: rotate3d 4s ease infinite;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+            position: relative;
+        }
+
+        .header-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border-radius: inherit;
+            filter: blur(10px);
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        @keyframes rotate3d {
+            0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+            50% { transform: rotateY(180deg) rotateX(10deg); }
+        }
+
+        .header-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-badge {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .header-badge:hover {
+            background: rgba(0, 212, 255, 0.15);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+            border-color: var(--primary);
+        }
+
+        .live-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px var(--success);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        .container {
+            padding: 50px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .filters-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            padding: 35px;
+            border-radius: 25px;
+            border: 1px solid var(--glass);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filters-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(123, 47, 247, 0.05));
+            z-index: 0;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filters-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filters-title i {
+            font-size: 28px;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .clear-filters-btn, .apply-filters-btn {
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .clear-filters-btn {
+            background: linear-gradient(135deg, var(--danger), #ff6b9d);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 59, 92, 0.3);
+        }
+
+        .clear-filters-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 59, 92, 0.5);
+        }
+
+        .apply-filters-btn {
+            background: linear-gradient(135deg, var(--success), #48dbfb);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 227, 150, 0.3);
+        }
+
+        .apply-filters-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 227, 150, 0.5);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-input, .filter-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .filter-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .filter-select option {
+            background: var(--dark);
+            color: white;
+            padding: 10px;
+        }
+
+        .active-filters-badge {
+            background: linear-gradient(135deg, var(--warning), #feca57);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(255, 159, 67, 0.4);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 35px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            padding: 40px;
+            border-radius: 25px;
+            border: 1px solid var(--glass);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .card:hover {
+            transform: translateY(-20px) scale(1.03);
+            border-color: var(--primary);
+            box-shadow: 0 30px 80px rgba(0, 212, 255, 0.3);
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 18px;
+            animation: iconPulse 2.5s infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .card.nao .card-icon {
+            background: linear-gradient(135deg, var(--danger), #ff6b9d);
+        }
+
+        .card.nao .card-icon::after {
+            background: var(--danger);
+        }
+
+        .card.andamento .card-icon {
+            background: linear-gradient(135deg, var(--warning), #feca57);
+        }
+
+        .card.andamento .card-icon::after {
+            background: var(--warning);
+        }
+
+        .card.concluido .card-icon {
+            background: linear-gradient(135deg, var(--success), #48dbfb);
+        }
+
+        .card.concluido .card-icon::after {
+            background: var(--success);
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-trend.up {
+            color: var(--success);
+        }
+
+        .card-trend.down {
+            color: var(--danger);
+        }
+
+        .card-label {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-value {
+            font-size: 64px;
+            font-weight: 900;
+            display: block;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.6));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-footer {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-footer i {
+            margin-right: 6px;
+            color: var(--primary);
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 35px;
+            margin-bottom: 50px;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            padding: 40px;
+            border-radius: 25px;
+            border: 1px solid var(--glass);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.03), rgba(123, 47, 247, 0.03));
+            z-index: 0;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 70px rgba(0, 212, 255, 0.25);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .chart-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-title i {
+            font-size: 26px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 380px;
+            z-index: 1;
+        }
+
+        .table-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass);
+            animation: fadeInUp 0.7s ease;
+            position: relative;
+        }
+
+        .table-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.02), rgba(123, 47, 247, 0.02));
+            z-index: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .table-header {
+            padding: 35px;
+            border-bottom: 2px solid var(--glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(123, 47, 247, 0.08));
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .table-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .table-stat-label {
+            font-size: 11px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table-search {
+            padding: 20px 35px;
+            background: rgba(0, 212, 255, 0.05);
+            border-bottom: 1px solid var(--glass);
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            max-width: 500px;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .table-search-input {
+            width: 100%;
+            padding: 14px 18px 14px 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .table-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .table-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 650px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: var(--darker);
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 212, 255, 0.12);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        th {
+            padding: 22px 20px;
+            text-align: left;
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 3px solid var(--primary);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        th:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        th i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass);
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 212, 255, 0.08);
+            transform: scale(1.01);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.15);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--warning), #feca57);
+            color: var(--dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .status::before {
+            content: '';
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        .status-nao {
+            background: linear-gradient(135deg, rgba(255, 59, 92, 0.25), rgba(255, 107, 157, 0.25));
+            color: #ff3b5c;
+            border: 2px solid rgba(255, 59, 92, 0.4);
+        }
+
+        .status-nao::before {
+            background: var(--danger);
+            box-shadow: 0 0 12px var(--danger);
+        }
+
+        .status-andamento {
+            background: linear-gradient(135deg, rgba(255, 159, 67, 0.25), rgba(254, 202, 87, 0.25));
+            color: #ff9f43;
+            border: 2px solid rgba(255, 159, 67, 0.4);
+        }
+
+        .status-andamento::before {
+            background: var(--warning);
+            box-shadow: 0 0 12px var(--warning);
+        }
+
+        .status-concluido {
+            background: linear-gradient(135deg, rgba(0, 227, 150, 0.25), rgba(72, 219, 251, 0.25));
+            color: #00e396;
+            border: 2px solid rgba(0, 227, 150, 0.4);
+        }
+
+        .status-concluido::before {
+            background: var(--success);
+            box-shadow: 0 0 12px var(--success);
+        }
+
+        .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .tech-badge i {
+            color: var(--primary);
+        }
+
+        .contract-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(123, 47, 247, 0.15);
+            border-radius: 15px;
+            border: 1px solid rgba(123, 47, 247, 0.3);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .contract-badge i {
+            font-size: 11px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            border-top: 1px solid var(--glass);
+            margin-top: 60px;
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.03), rgba(123, 47, 247, 0.03));
+            z-index: 0;
+        }
+
+        footer p {
+            position: relative;
+            z-index: 1;
+        }
+
+        footer .footer-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        footer .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        footer .footer-links a:hover {
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .no-results i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .no-results h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 212, 255, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1400px) {
+            .container { padding: 40px; }
+            .charts-section { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 1024px) {
+            .container { padding: 30px; }
+            .cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+            .filters-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            header h1 { font-size: 22px; }
+            .header-info { flex-direction: column; width: 100%; }
+            .header-badge { width: 100%; justify-content: center; }
+            
+            .container { padding: 20px; }
+            .filters-section { padding: 25px; }
+            .filters-header { flex-direction: column; gap: 15px; }
+            .filters-actions { width: 100%; flex-direction: column; }
+            .filters-grid { grid-template-columns: 1fr; }
+            
+            .cards { grid-template-columns: 1fr; }
+            .card-value { font-size: 48px; }
+            
+            .charts-section { grid-template-columns: 1fr; }
+            .chart-wrapper { height: 300px; }
+            
+            .table-header { flex-direction: column; gap: 20px; padding: 25px; }
+            .table-stats { flex-direction: column; width: 100%; }
+            .table-stat { width: 100%; }
+            
+            th, td { padding: 12px 10px; font-size: 12px; }
+            
+            .status { padding: 8px 14px; font-size: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 18px; }
+            .header-icon { width: 45px; height: 45px; font-size: 20px; }
+            
+            .filters-title { font-size: 20px; }
+            .card-value { font-size: 42px; }
+            .chart-title { font-size: 18px; }
+            
+            th, td { padding: 10px 8px; font-size: 11px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 4.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+</div>
+
+<header>
+    <h1>
+        <div class="header-icon">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        Dashboard - Solicitações de Troca de Senha
+    </h1>
+    <div class="header-info">
+        <div class="header-badge">
+            <div class="live-indicator"></div>
+            Atualização Automática
+        </div>
+        <div class="active-filters-badge" id="activeFiltersBadge" style="display: none;">
+            <i class="fas fa-filter"></i>
+            <span id="activeFiltersCount">0</span> Filtros Ativos
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="filters-section">
+        <div class="filters-header">
+            <div class="filters-title">
+                <i class="fas fa-filter"></i>
+                Filtros Avançados
+            </div>
+            <div class="filters-actions">
+                <button class="clear-filters-btn" onclick="limparFiltros()">
+                    <i class="fas fa-times-circle"></i>
+                    Limpar
+                </button>
+                <button class="apply-filters-btn" onclick="aplicarFiltros()">
+                    <i class="fas fa-check-circle"></i>
+                    Aplicar
+                </button>
+            </div>
+        </div>
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-user"></i>
+                    Nome do Técnico
+                </label>
+                <input type="text" id="filterNome" class="filter-input" placeholder="Digite o nome do técnico...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-phone"></i>
+                    Número do Técnico
+                </label>
+                <input type="text" id="filterNumero" class="filter-input" placeholder="Digite o número...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-file-contract"></i>
+                    Contrato
+                </label>
+                <select id="filterContrato" class="filter-select">
+                    <option value="">Todos os Contratos</option>
+                    <option value="FMMTO TMG">FMMTO TMG</option>
+                    <option value="FMMT TRJ">FMMT TRJ</option>
+                    <option value="FMO TRJ1">FMO TRJ1</option>
+                    <option value="FMO TRJ2">FMO TRJ2</option>
+                    <option value="FMMT TNE1">FMMT TNE1</option>
+                    <option value="FMO TNE1">FMO TNE1</option>
+                    <option value="FMMT TNE2">FMMT TNE2</option>
+                    <option value="FMO TNE2">FMO TNE2</option>
+                    <option value="VIVO RJ">VIVO RJ</option>
+                    <option value="VIVO ES">VIVO ES</option>
+                    <option value="ATC MG">ATC MG</option>
+                    <option value="CLARO RJ">CLARO RJ</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-desktop"></i>
+                    Plataforma
+                </label>
+                <select id="filterPlataforma" class="filter-select">
+                    <option value="">Todas as Plataformas</option>
+                    <option value="TOA">TOA (TIM)</option>
+                    <option value="SGMP">SGMP (TIM)</option>
+                    <option value="GENESIS">GENESIS (VIVO)</option>
+                    <option value="TAIS/ADREDE">AD REDE(TAIS)</option>
+                    <option value="rESET MFA">RESET MFA</option>
+                    <option value="Outra">Outra</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-signal"></i>
+                    Status
+                </label>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">Todos os Status</option>
+                    <option value="nao">Não Iniciado</option>
+                    <option value="andamento">Em Andamento</option>
+                    <option value="concluido">Concluído</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-calendar"></i>
+                    Data
+                </label>
+                <input type="date" id="filterData" class="filter-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+    </div>
+
+    <div class="cards">
+        <div class="card nao">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="trendNao">0%</span>
+                </div>
+            </div>
+            <div class="card-label">Não Iniciado</div>
+            <span class="card-value" id="nao">0</span>
+            <div class="card-footer">
+                <span><i class="fas fa-clock"></i> Total pendente</span>
+                <span id="percentNao">0%</span>
+            </div>
+        </div>
+
+        <div class="card andamento">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="trendAndamento">0%</span>
+                </div>
+            </div>
+            <div class="card-label">Em Andamento</div>
+            <span class="card-value" id="andamento">0</span>
+            <div class="card-footer">
+                <span><i class="fas fa-hourglass-half"></i> Em processamento</span>
+                <span id="percentAndamento">0%</span>
+            </div>
+        </div>
+
+        <div class="card concluido">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-trend up">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="trendConcluido">0%</span>
+                </div>
+            </div>
+            <div class="card-label">Concluído</div>
+            <span class="card-value" id="concluido">0</span>
+            <div class="card-footer">
+                <span><i class="fas fa-check-double"></i> Finalizados</span>
+                <span id="percentConcluido">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-section">
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-chart-pie"></i>
+                Distribuição de Status
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="chartPie"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-chart-line"></i>
+                Evolução em Tempo Real
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="chartLine"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <h2>
+                <i class="fas fa-table-list"></i>
+                Detalhes das Solicitações
+            </h2>
+            <div class="table-stats">
+                <div class="table-stat">
+                    <div class="table-stat-value" id="totalRegistros">0</div>
+                    <div class="table-stat-label">Total</div>
+                </div>
+                <div class="table-stat">
+                    <div class="table-stat-value" id="registrosFiltrados">0</div>
+                    <div class="table-stat-label">Filtrados</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-search">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearchInput" class="table-search-input" placeholder="Busca rápida na tabela...">
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-hashtag"></i> #</th>
+                        <th><i class="fas fa-user"></i> Técnico</th>
+                        <th><i class="fas fa-phone"></i> Número</th>
+                        <th><i class="fas fa-file-contract"></i> Contrato</th>
+                        <th><i class="fas fa-desktop"></i> Plataforma</th>
+                        <th><i class="fas fa-calendar"></i> Data</th>
+                        <th><i class="fas fa-signal"></i> Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>&copy; 2024 TLP Telecomunicações - Dashboard de Solicitações</p>
+    <div class="footer-links">
+        <a href="#"><i class="fas fa-home"></i> Início</a>
+        <a href="#"><i class="fas fa-chart-line"></i> Relatórios</a>
+        <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+    </div>
+</footer>
+
+<script>
+    const sheetID = "1BVtdORvJGo1pSKaEQImplUHyUGoZ_Xp2EqJ6veAR9kU";
+    const url = `https://script.google.com/macros/s/AKfycbwVTdkmt0kmreHteuHUiHZm2yUdsoyu9N9JohpxwHaHQQHC1CdRcU0pfCyqawLVBjJzDA/exec`;
+
+    let chartPie, chartLine;
+    let lineData = {
+        labels: [],
+        nao: [],
+        andamento: [],
+        concluido: []
+    };
+
+    let todosOsDados = [];
+    let dadosFiltrados = [];
+    let valoresAnteriores = { nao: 0, andamento: 0, concluido: 0 };
+    let buscaRapida = '';
+
+    function formatarData(dataISO) {
+        if (!dataISO) return '';
+        
+        try {
+            const data = new Date(dataISO);
+            
+            if (isNaN(data.getTime())) return dataISO;
+            
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            
+            return `${dia}/${mes}/${ano}`;
+        } catch (error) {
+            console.error('Erro ao formatar data:', error);
+            return dataISO;
+        }
+    }
+
+    function normalizarColuna(linha, possiveisNomes) {
+        for (let nome of possiveisNomes) {
+            if (linha[nome] !== undefined && linha[nome] !== null && linha[nome] !== '') {
+                return linha[nome];
+            }
+        }
+        return '';
+    }
+
+    async function carregarDados() {
+        try {
+            document.getElementById('loading').classList.add('active');
+            
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log('📊 Dados recebidos:', data);
+
+            todosOsDados = data.filter(linha => {
+                let nome = normalizarColuna(linha, [
+                    "nome_tecnico", 
+                    "NOME DO TÉCNICO", 
+                    "Nome do Técnico",
+                    "nome",
+                    "NOME"
+                ]).trim();
+                
+                let numero = normalizarColuna(linha, [
+                    "numero_tecnico", 
+                    "NÚMERO DO TÉCNICO",
+                    "Número do Técnico",
+                    "numero",
+                    "NUMERO"
+                ]).trim();
+                
+                return nome || numero;
+            });
+
+            console.log('✅ Dados filtrados:', todosOsDados.length);
+
+            aplicarFiltros();
+            document.getElementById('loading').classList.remove('active');
+
+        } catch (err) {
+            console.error("❌ Erro ao carregar dados:", err);
+            document.getElementById('loading').classList.remove('active');
+            alert('Erro ao carregar dados. Verifique o console para mais detalhes.');
+        }
+    }
+
+    function aplicarFiltros() {
+        const filterNome = document.getElementById('filterNome').value.toLowerCase().trim();
+        const filterNumero = document.getElementById('filterNumero').value.toLowerCase().trim();
+        const filterContrato = document.getElementById('filterContrato').value.toLowerCase().trim();
+        const filterPlataforma = document.getElementById('filterPlataforma').value.toLowerCase().trim();
+        const filterStatus = document.getElementById('filterStatus').value;
+        const filterData = document.getElementById('filterData').value;
+
+        let filtrosAtivos = 0;
+        if (filterNome) filtrosAtivos++;
+        if (filterNumero) filtrosAtivos++;
+        if (filterContrato) filtrosAtivos++;
+        if (filterPlataforma) filtrosAtivos++;
+        if (filterStatus) filtrosAtivos++;
+        if (filterData) filtrosAtivos++;
+
+        const badge = document.getElementById('activeFiltersBadge');
+        const count = document.getElementById('activeFiltersCount');
+        if (filtrosAtivos > 0) {
+            badge.style.display = 'inline-flex';
+            count.textContent = filtrosAtivos;
+        } else {
+            badge.style.display = 'none';
+        }
+
+        dadosFiltrados = todosOsDados.filter(linha => {
+            let nome = normalizarColuna(linha, [
+                "nome_tecnico", 
+                "NOME DO TÉCNICO",
+                "Nome do Técnico",
+                "nome",
+                "NOME"
+            ]).toLowerCase();
+            
+            let numero = normalizarColuna(linha, [
+                "numero_tecnico", 
+                "NÚMERO DO TÉCNICO",
+                "Número do Técnico",
+                "numero",
+                "NUMERO"
+            ]).toLowerCase();
+            
+            let contrato = normalizarColuna(linha, [
+                "contrato", 
+                "CONTRATO",
+                "Contrato"
+            ]).toLowerCase();
+            
+            let plataforma = normalizarColuna(linha, [
+                "plataforma", 
+                "PLATAFORMA",
+                "Plataforma",
+                "PLATAFORMA SOLICITADA",
+                "plataforma_solicitada"
+            ]).toLowerCase();
+            
+            let dataPedido = normalizarColuna(linha, [
+                "DATA DO PEDIDO",
+                "data",
+                "Data",
+                "DATA",
+                "data_pedido"
+            ]);
+            
+            let status = normalizarColuna(linha, [
+                "STATUS",
+                "status",
+                "Status"
+            ]).toLowerCase();
+
+            if (filterNome && !nome.includes(filterNome)) return false;
+            if (filterNumero && !numero.includes(filterNumero)) return false;
+            if (filterContrato && !contrato.includes(filterContrato)) return false;
+            if (filterPlataforma && !plataforma.includes(filterPlataforma)) return false;
+            
+            if (filterData && dataPedido) {
+                const dataFormatada = formatarData(dataPedido);
+                const [dia, mes, ano] = dataFormatada.split('/');
+                const dataComparacao = `${ano}-${mes}-${dia}`;
+                if (dataComparacao !== filterData) return false;
+            }
+
+            if (filterStatus) {
+                if (filterStatus === 'nao' && !(status.includes('não') || status.includes('nao'))) return false;
+                if (filterStatus === 'andamento' && !status.includes('andamento')) return false;
+                if (filterStatus === 'concluido' && !(status.includes('concluído') || status.includes('concluido'))) return false;
+            }
+
+            if (buscaRapida) {
+                const searchTerm = buscaRapida.toLowerCase();
+                const searchableText = `${nome} ${numero} ${contrato} ${plataforma} ${status}`.toLowerCase();
+                if (!searchableText.includes(searchTerm)) return false;
+            }
+
+            return true;
+        });
+
+        atualizarInterface();
+    }
+
+    function atualizarInterface() {
+        let nao = 0, andamento = 0, concluido = 0;
+        const tabela = document.getElementById("tabela");
+        tabela.innerHTML = "";
+
+        if (dadosFiltrados.length === 0) {
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="7" class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>Nenhum resultado encontrado</h3>
+                        <p>Tente ajustar os filtros para ver mais resultados</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            dadosFiltrados.forEach((linha, index) => {
+                let nome = normalizarColuna(linha, [
+                    "nome_tecnico", 
+                    "NOME DO TÉCNICO",
+                    "Nome do Técnico",
+                    "nome",
+                    "NOME"
+                ]);
+                
+                let numero = normalizarColuna(linha, [
+                    "numero_tecnico", 
+                    "NÚMERO DO TÉCNICO",
+                    "Número do Técnico",
+                    "numero",
+                    "NUMERO"
+                ]);
+                
+                let contrato = normalizarColuna(linha, [
+                    "contrato", 
+                    "CONTRATO",
+                    "Contrato"
+                ]);
+                
+                let plataforma = normalizarColuna(linha, [
+                    "plataforma", 
+                    "PLATAFORMA",
+                    "Plataforma",
+                    "PLATAFORMA SOLICITADA",
+                    "LOCAL PRA TROCAR SENHA"
+                ]);
+                
+                let dataPedido = normalizarColuna(linha, [
+                    "DATA DO PEDIDO",
+                    "data",
+                    "Data",
+                    "DATA",
+                    "data_pedido"
+                ]);
+                
+                let status = normalizarColuna(linha, [
+                    "STATUS",
+                    "status",
+                    "Status"
+                ]);
+
+                dataPedido = formatarData(dataPedido);
+
+                if (buscaRapida) {
+                    const regex = new RegExp(`(${buscaRapida})`, 'gi');
+                    nome = nome.replace(regex, '<span class="highlight">$1</span>');
+                    numero = numero.replace(regex, '<span class="highlight">$1</span>');
+                    contrato = contrato.replace(regex, '<span class="highlight">$1</span>');
+                    plataforma = plataforma.replace(regex, '<span class="highlight">$1</span>');
+                }
+
+                let classe = "";
+                let statusTexto = status.toLowerCase();
+
+                if (statusTexto.includes("não") || statusTexto.includes("nao")) {
+                    nao++;
+                    classe = "status-nao";
+                } 
+                else if (statusTexto.includes("andamento")) {
+                    andamento++;
+                    classe = "status-andamento";
+                } 
+                else if (statusTexto.includes("concluído") || statusTexto.includes("concluido")) {
+                    concluido++;
+                    classe = "status-concluido";
+                }
+
+                tabela.innerHTML += `
+                <tr style="animation-delay: ${index * 0.05}s">
+                    <td><strong>${index + 1}</strong></td>
+                    <td>
+                        <div class="tech-badge">
+                            <i class="fas fa-user-tie"></i>
+                            ${nome || '<em style="opacity: 0.5;">Não informado</em>'}
+                        </div>
+                    </td>
+                    <td><i class="fas fa-phone" style="color: var(--primary); margin-right: 8px;"></i>${numero || '<em style="opacity: 0.5;">-</em>'}</td>
+                    <td>
+                        <div class="contract-badge">
+                            <i class="fas fa-file-contract"></i>
+                            ${contrato || '<em style="opacity: 0.5;">-</em>'}
+                        </div>
+                    </td>
+                    <td><i class="fas fa-desktop" style="color: var(--secondary); margin-right: 8px;"></i>${plataforma || '<em style="opacity: 0.5;">Não informado</em>'}</td>
+                    <td><i class="fas fa-calendar-day" style="color: var(--success); margin-right: 8px;"></i>${dataPedido || '<em style="opacity: 0.5;">-</em>'}</td>
+                    <td><span class="status ${classe}">${status || '<em style="opacity: 0.5;">-</em>'}</span></td>
+                </tr>`;
+            });
+        }
+
+        const total = nao + andamento + concluido;
+        document.getElementById("nao").innerText = nao;
+        document.getElementById("andamento").innerText = andamento;
+        document.getElementById("concluido").innerText = concluido;
+
+        document.getElementById("percentNao").innerText = total > 0 ? `${((nao / total) * 100).toFixed(1)}%` : '0%';
+        document.getElementById("percentAndamento").innerText = total > 0 ? `${((andamento / total) * 100).toFixed(1)}%` : '0%';
+        document.getElementById("percentConcluido").innerText = total > 0 ? `${((concluido / total) * 100).toFixed(1)}%` : '0%';
+
+        calcularTendencias(nao, andamento, concluido);
+
+        document.getElementById("totalRegistros").innerText = todosOsDados.length;
+        document.getElementById("registrosFiltrados").innerText = dadosFiltrados.length;
+
+        atualizarGraficos(nao, andamento, concluido);
+    }
+
+    function calcularTendencias(nao, andamento, concluido) {
+        const calcularTrend = (atual, anterior) => {
+            if (anterior === 0) return 0;
+            return (((atual - anterior) / anterior) * 100).toFixed(1);
+        };
+
+        const trendNao = calcularTrend(nao, valoresAnteriores.nao);
+        const trendAndamento = calcularTrend(andamento, valoresAnteriores.andamento);
+        const trendConcluido = calcularTrend(concluido, valoresAnteriores.concluido);
+
+        document.getElementById("trendNao").innerText = `${Math.abs(trendNao)}%`;
+        document.getElementById("trendAndamento").innerText = `${Math.abs(trendAndamento)}%`;
+        document.getElementById("trendConcluido").innerText = `${Math.abs(trendConcluido)}%`;
+
+        valoresAnteriores = { nao, andamento, concluido };
+    }
+
+    function atualizarGraficos(nao, andamento, concluido) {
+        if (chartPie) {
+            chartPie.data.datasets[0].data = [nao, andamento, concluido];
+            chartPie.update('none');
+        } else {
+            const ctxPie = document.getElementById("chartPie").getContext("2d");
+            chartPie = new Chart(ctxPie, {
+                type: "doughnut",
+                data: {
+                    labels: ["Não Iniciado", "Em Andamento", "Concluído"],
+                    datasets: [{
+                        data: [nao, andamento, concluido],
+                        backgroundColor: [
+                            "rgba(255, 59, 92, 0.9)",
+                            "rgba(255, 159, 67, 0.9)",
+                            "rgba(0, 227, 150, 0.9)"
+                        ],
+                        borderColor: [
+                            "#ff3b5c",
+                            "#ff9f43",
+                            "#00e396"
+                        ],
+                        borderWidth: 4,
+                        hoverOffset: 25
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: "#fff",
+                                font: { size: 14, weight: '700', family: 'Poppins' },
+                                padding: 25,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            padding: 16,
+                            titleFont: { size: 16, weight: 'bold', family: 'Poppins' },
+                            bodyFont: { size: 14, family: 'Poppins' },
+                            borderColor: 'rgba(0, 212, 255, 0.5)',
+                            borderWidth: 2,
+                            cornerRadius: 10,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    }
+                }
+            });
+        }
+
+        const agora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        lineData.labels.push(agora);
+        lineData.nao.push(nao);
+        lineData.andamento.push(andamento);
+        lineData.concluido.push(concluido);
+
+        if (lineData.labels.length > 20) {
+            lineData.labels.shift();
+            lineData.nao.shift();
+            lineData.andamento.shift();
+            lineData.concluido.shift();
+        }
+
+        if (chartLine) {
+            chartLine.data.labels = lineData.labels;
+            chartLine.data.datasets[0].data = lineData.nao;
+            chartLine.data.datasets[1].data = lineData.andamento;
+            chartLine.data.datasets[2].data = lineData.concluido;
+            chartLine.update('none');
+        } else {
+            const ctxLine = document.getElementById("chartLine").getContext("2d");
+            chartLine = new Chart(ctxLine, {
+                type: "line",
+                data: {
+                    labels: lineData.labels,
+                    datasets: [
+                        {
+                            label: "Não Iniciado",
+                            data: lineData.nao,
+                            borderColor: "#ff3b5c",
+                            backgroundColor: "rgba(255, 59, 92, 0.15)",
+                            borderWidth: 4,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: "#ff3b5c",
+                            pointBorderColor: "#fff",
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: "Em Andamento",
+                            data: lineData.andamento,
+                            borderColor: "#ff9f43",
+                            backgroundColor: "rgba(255, 159, 67, 0.15)",
+                            borderWidth: 4,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: "#ff9f43",
+                            pointBorderColor: "#fff",
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: "Concluído",
+                            data: lineData.concluido,
+                            borderColor: "#00e396",
+                            backgroundColor: "rgba(0, 227, 150, 0.15)",
+                            borderWidth: 4,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: "#00e396",
+                            pointBorderColor: "#fff",
+                            pointBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: "#fff",
+                                font: { size: 14, weight: '700', family: 'Poppins' },
+                                padding: 25,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            padding: 16,
+                            titleFont: { size: 16, weight: 'bold', family: 'Poppins' },
+                            bodyFont: { size: 14, family: 'Poppins' },
+                            borderColor: 'rgba(0, 212, 255, 0.5)',
+                            borderWidth: 2,
+                            cornerRadius: 10
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: "#fff", 
+                                font: { size: 12, weight: '600', family: 'Poppins' },
+                                padding: 10
+                            },
+                            grid: { 
+                                color: "rgba(255, 255, 255, 0.1)",
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            ticks: { 
+                                color: "#fff", 
+                                font: { size: 11, weight: '600', family: 'Poppins' },
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: { 
+                                color: "rgba(255, 255, 255, 0.05)",
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function limparFiltros() {
+        document.getElementById('filterNome').value = '';
+        document.getElementById('filterNumero').value = '';
+        document.getElementById('filterContrato').value = '';
+        document.getElementById('filterPlataforma').value = '';
+        document.getElementById('filterStatus').value = '';
+        document.getElementById('filterData').value = '';
+        document.getElementById('tableSearchInput').value = '';
+        buscaRapida = '';
+        aplicarFiltros();
+    }
+
+    document.getElementById('filterNome').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') aplicarFiltros();
+    });
+    document.getElementById('filterNumero').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') aplicarFiltros();
+    });
+    document.getElementById('filterContrato').addEventListener('change', aplicarFiltros);
+    document.getElementById('filterPlataforma').addEventListener('change', aplicarFiltros);
+    document.getElementById('filterStatus').addEventListener('change', aplicarFiltros);
+    document.getElementById('filterData').addEventListener('change', aplicarFiltros);
+
+    document.getElementById('tableSearchInput').addEventListener('input', (e) => {
+        buscaRapida = e.target.value.trim();
+        aplicarFiltros();
+    });
+
+    carregarDados();
+
+    setInterval(carregarDados, 10000);
+</script>
+
+</body>
+</html>
